@@ -1,0 +1,97 @@
+<doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Class</title>
+	</head>
+	<body>
+		<script>
+
+ // Вам нужно создать класс List, который будет уметь хранить в себе данные и будет иметь методы для добавления и удаления. 
+			
+		class List {
+
+			constructor(notes = []) {
+				this.notes = notes;
+			}
+
+			addNote(val) {
+				const date = new Date();
+				const note = {
+					name: val.name,
+					content: val.content,
+					createdAt: `${date.getFullYear()}.${date.getMonth()}.${date.getDay()}`,
+					status: false
+				}
+				this.notes = [note, ...this.notes];
+			}
+
+			removeNote(val, confirm) {
+				if (confirm) {
+					this.notes = this.notes.filter(note => note.content !== val)
+				}
+			}
+		}
+
+
+// Затем нужно создать "наследника", класс TodoList, который еще умеет помечать заметки, как выполненные и показывать статистику,
+
+
+
+
+		class ToDoList extends List {
+			constructor(notes) {
+				super(notes);
+			}
+
+			completeNote(content) {
+				this.notes = this.notes.map(note=> ({
+					...note,
+					status: note.content === content ? true : note.status
+				}));
+			}
+
+			statistic () {
+				return this.notes.reduce((acc, note) => {
+					note.status === true && acc.status++;
+					return acc;
+				}, {
+					total: this.notes.length,
+					status: 0
+				})
+			}
+
+		}
+
+// и класс ContactList, который умеет осуществлять поиск по введенным значениям.
+
+class contactList extends ToDoList {
+
+	findNote (content) {
+		return this.notes.find(note => note.content === content)
+	}
+}
+
+		let summer = new contactList([
+				{name: 'Yalta', content: 'walking', createdAt: '2020.2.3', status: false},
+				{name: 'Odessa', content: 'swimming', createdAt: '2019.7.1', status: false},
+			])
+
+		summer.addNote({name: 'Kyiv', content: 'sleep'})
+
+		summer.removeNote('walking', true)
+
+		summer.completeNote('swimming')
+
+		console.log(summer.statistic());
+
+
+		console.log(summer)
+
+		console.log(summer.findNote('swimming'))
+
+// *Бонусом, кому скучно - почитайте о LocalStorage и JSON, чтоб научить ваш Todo сохранять данные после перезагрузки страницы
+
+		</script>
+	</body>
+</html>
