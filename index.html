@@ -15,6 +15,10 @@
 				this.notes = notes;
 			}
 
+			toLocalStorage() {
+				localStorage.setItem('notes', JSON.stringify(this.notes));
+			}
+
 			addNote(val) {
 				const date = new Date();
 				const note = {
@@ -89,6 +93,8 @@ class contactList extends ToDoList {
 		console.log(summer)
 
 		console.log(summer.findNote('swimming'))
+
+		summer.toLocalStorage();
 
 // *Бонусом, кому скучно - почитайте о LocalStorage и JSON, чтоб научить ваш Todo сохранять данные после перезагрузки страницы
 
