@@ -8,93 +8,74 @@
 		<script>
 
  // Вам нужно создать класс List, который будет уметь хранить в себе данные и будет иметь методы для добавления и удаления. 
-			
-		class List {
-
-			constructor(notes = []) {
-				this.notes = notes;
-			}
-
-			toLocalStorage() {
-				localStorage.setItem('notes', JSON.stringify(this.notes));
-			}
-
-			addNote(val) {
-				const date = new Date();
-				const note = {
-					name: val.name,
-					content: val.content,
-					createdAt: `${date.getFullYear()}.${date.getMonth()}.${date.getDay()}`,
-					status: false
-				}
-				this.notes = [note, ...this.notes];
-			}
-
-			removeNote(val, confirm) {
-				if (confirm) {
-					this.notes = this.notes.filter(note => note.content !== val)
-				}
-			}
+	class List {
+		constructor(items) {
+			this.items = items;
+		}
+		
+		addItem (newItem) {
+			this.items = [newItem, ...this.items]
 		}
 
+		deleteItem(object) {
+			this.items = this.items.filter(item=> {
+				return  item[Object.keys(object)[0]] !== Object.values(object)[0];
+			})
+		}
+
+	}
 
 // Затем нужно создать "наследника", класс TodoList, который еще умеет помечать заметки, как выполненные и показывать статистику,
 
-
-
-
-		class ToDoList extends List {
-			constructor(notes) {
-				super(notes);
-			}
-
-			completeNote(content) {
-				this.notes = this.notes.map(note=> ({
-					...note,
-					status: note.content === content ? true : note.status
-				}));
-			}
-
-			statistic () {
-				return this.notes.reduce((acc, note) => {
-					note.status === true && acc.status++;
-					return acc;
-				}, {
-					total: this.notes.length,
-					status: 0
-				})
-			}
-
+	class TodoList extends List {
+		completedItem(content) {
+			this.items = this.items.map(item => ({
+				...item,
+				status: item.content === content ? true : item.status
+			}));
 		}
 
+		statistic(){
+			return this.items.reduce((acc, item) => {
+				item.status === true && acc.status++;
+				return acc;
+			}, {
+				total: this.items.length,
+				status: 0
+			})
+		}
+	}
+		
 // и класс ContactList, который умеет осуществлять поиск по введенным значениям.
 
-class contactList extends ToDoList {
-
-	findNote (content) {
-		return this.notes.find(note => note.content === content)
+	class ContactList extends List{
+		findItem(value) {
+			return this.items.filter(item => {
+				for (let i in item) {
+					if (item[i] === value) {
+						return true;
+					}
+				}
+			} );
+		}
 	}
-}
 
-		let summer = new contactList([
-				{name: 'Yalta', content: 'walking', createdAt: '2020.2.3', status: false},
-				{name: 'Odessa', content: 'swimming', createdAt: '2019.7.1', status: false},
-			])
+	
+const person1 = new ContactList([
+		{name: 'Lena', tel: '+3234034343', createdAt: '2020.12.23'},
+		{name: 'Ivan', tel: '+9343043343', createdAt: '2020.01.08'},
+		{name: 'Egor', tel: '+7123980232', createdAt: '2020.03.05'},
 
-		summer.addNote({name: 'Kyiv', content: 'sleep'})
+	])
 
-		summer.removeNote('walking', true)
+person1.addItem({name: 'Dima', tel: '+090909090', createdAt: '2020.11.11'})
+person1.deleteItem({name: 'Lena'})
 
-		summer.completeNote('swimming')
+console.log(person1)
+		
+console.log('Array of faunded value :', person1.findItem('Ivan'))
 
-		console.log(summer.statistic());
 
-
-		console.log(summer)
-
-		console.log(summer.findNote('swimming'))
-
-		summer.toLocalStorage();
 
 // *Бонусом, кому скучно - почитайте о LocalStorage и JSON, чтоб научить ваш Todo сохранять данные после перезагрузки страницы
 
