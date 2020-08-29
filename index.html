@@ -1,37 +1,49 @@
-<doctype html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>Class</title>
-	</head>
-	<body>
-		<script>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+
+
 
  // Вам нужно создать класс List, который будет уметь хранить в себе данные и будет иметь методы для добавления и удаления. 
 	class List {
+
 		constructor(items) {
 			this.items = items;
 		}
 		
+		generateId(items) {
+			let id = `f${(~~(Math.random()*1e8)).toString(16)}`;
+			let index = items.findIndex(item => { item.id === id })
+			while(index !== -1) {
+				id = `f${(~~(Math.random()*1e8)).toString(16)}`;
+			}
+			return id;
+		}
+
 		addItem (newItem) {
-			this.items = [newItem, ...this.items]
+			newItem.id = this.generateId(this.items);
+			const date =  new Date();
+			newItem.createdAt = `${date.getFullYear()}.${date.getMonth()}.${date.getDay()}`;
+			this.items = [newItem, ...this.items];
 		}
 
-		deleteItem(object) {
-			this.items = this.items.filter(item=> {
-				return  item[Object.keys(object)[0]] !== Object.values(object)[0];
-			})
+		deleteItem(id) {
+			this.items = this.items.filter(item => item.id !== id)
 		}
-
 	}
 
 // Затем нужно создать "наследника", класс TodoList, который еще умеет помечать заметки, как выполненные и показывать статистику,
 
 	class TodoList extends List {
-		completedItem(content) {
+		completedItem(id) {
 			this.items = this.items.map(item => ({
 				...item,
-				status: item.content === content ? true : item.status
+				status: item.id === id ? true : item.status
 			}));
 		}
 
@@ -51,34 +63,38 @@
 	class ContactList extends List{
 		findItem(value) {
 			return this.items.filter(item => {
-				for (let i in item) {
-					if (item[i] === value) {
-						return true;
-					}
-				}
+				const itemValues = Object.values(item);
+				return itemValues.includes(value);
 			} );
 		}
 	}
 
 	
-const person1 = new ContactList([
-		{name: 'Lena', tel: '+3234034343', createdAt: '2020.12.23'},
-		{name: 'Ivan', tel: '+9343043343', createdAt: '2020.01.08'},
-		{name: 'Egor', tel: '+7123980232', createdAt: '2020.03.05'},
+const notebook1 = new ContactList([
+		{ name: 'Lena', tel: '+3234034343', createdAt: '2020.12.23', status: false, id: "f4yu2m4k"},
+		{ name: 'Ivan', tel: '+9343043343', createdAt: '2020.01.08', status: false, id: "fo99bv77"},
+		{ name: 'Egor', tel: '+7123980232', createdAt: '2020.03.05', status: false, id: "f2rerh39"},
 
 	])
 
-person1.addItem({name: 'Dima', tel: '+090909090', createdAt: '2020.11.11'})
-person1.deleteItem({name: 'Lena'})
+notebook1.addItem({name: 'Dima', tel: '+090909090', createdAt: '2020.11.11'})
 
-console.log(person1)
+const todo = new TodoList([
+		{name: 'Odessa', content: 'Swimming', status: false, createdAt: '2020.03.03', id: "f4yum4k"},
+		{name: 'Kyiv', content: 'Walking', status: false, createdAt: '2020.01.01', id: "geru2m4k"},
+		{name: 'Ibiza', content: 'Dancing', status: false, createdAt: '2020.02.02', id: "kjju2m4k"},
+	])
+
+
+console.log('notebook1:', notebook1)
 		
-console.log('Array of faunded value :', person1.findItem('Ivan'))
+console.log('Array of faunded value :', notebook1.findItem('Ivan'))
 
 
 
 // *Бонусом, кому скучно - почитайте о LocalStorage и JSON, чтоб научить ваш Todo сохранять данные после перезагрузки страницы
 
-		</script>
-	</body>
+		
+	</script>
+</body>
 </html>
